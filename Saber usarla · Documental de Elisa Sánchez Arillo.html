@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Saber usarla · Documental de Elisa Sánchez Arillo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#1D3A32; --bg2:#264A40; --ink:#F3EEDF; --soft:#C8D4C9;
+  --sun:#F2C14E; --coral:#EF8A6B; --sky:#8CC2E0; --chalk:rgba(243,238,223,.14);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#17302A; --bg2:#20403A; } }
+:root[data-theme="dark"]{ --bg:#17302A; --bg2:#20403A; }
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--ink);font-family:'Atkinson Hyperlegible',Verdana,sans-serif;overflow:hidden}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+
+/* Stage */
+#stage{position:relative;height:100%;overflow:hidden;background:radial-gradient(120% 90% at 30% 20%,var(--bg2),var(--bg))}
+.scene{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+.scene.on{opacity:1}
+.art{position:absolute;inset:-6%;display:flex;align-items:center;justify-content:flex-end;padding-right:6%}
+.art svg{width:min(56vw,760px);height:auto;opacity:.9}
+.scene.on .art{animation:drift 30s ease-out forwards}
+@keyframes drift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.09) translate(-2%,-1.5%)}}
+.copy{position:absolute;left:clamp(20px,6vw,96px);top:clamp(56px,12vh,140px);width:min(62vw,880px)}
+.chapter{font-size:clamp(15px,1.6vw,20px);color:var(--sun);letter-spacing:.02em;margin:0 0 18px}
+.headline{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:clamp(34px,5.6vw,84px);line-height:1.02;margin:0;font-variation-settings:"opsz" 144;text-wrap:balance}
+.scene.on .headline{animation:rise 1.6s .3s both}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* Subtitles */
+#subs{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));width:min(92vw,1000px);text-align:center;pointer-events:none}
+#subs span{display:inline;background:rgba(10,22,19,.78);padding:.18em .5em;line-height:1.7;font-size:clamp(18px,2.2vw,28px);box-decoration-break:clone;-webkit-box-decoration-break:clone;border-radius:4px}
+#subs.off{display:none}
+
+/* Controls */
+#bar{position:fixed;left:0;right:0;bottom:0;padding:12px clamp(12px,3vw,32px) calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;background:linear-gradient(transparent,rgba(10,22,19,.85) 40%);transition:opacity .4s}
+#bar.hide{opacity:0}
+#bar button{background:transparent;border:1.5px solid var(--chalk);border-radius:999px;padding:8px 16px;cursor:pointer}
+#bar button:hover{border-color:var(--soft)}
+#bar select{background:#10241F;border:1.5px solid var(--chalk);border-radius:8px;padding:7px 10px;max-width:220px}
+#track{flex:1 1 220px;display:flex;gap:4px;min-width:160px}
+#track button{flex:1;height:8px;padding:0!important;border:none!important;border-radius:4px!important;background:var(--chalk)!important}
+#track button.done{background:var(--soft)!important}
+#track button.now{background:var(--sun)!important}
+.lbl{font-size:14px;color:var(--soft)}
+
+/* Intro */
+#intro{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:clamp(24px,7vw,120px);gap:22px;background:radial-gradient(110% 90% at 70% 30%,var(--bg2),var(--bg));z-index:5}
+#intro h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(52px,10vw,150px);line-height:.95;margin:0;font-weight:700;font-variation-settings:"opsz" 144}
+#intro p{margin:0;max-width:62ch;color:var(--soft);font-size:clamp(17px,1.8vw,22px);line-height:1.5}
+#intro .by{color:var(--ink);font-size:clamp(18px,2vw,24px)}
+#play{align-self:flex-start;background:var(--sun);color:#1D2B26;border:none;border-radius:999px;padding:16px 30px;font-size:20px;font-weight:700;cursor:pointer;margin-top:10px}
+#intro .note{font-size:15px}
+#intro svg{position:absolute;right:-4%;bottom:-8%;width:min(48vw,620px);opacity:.5;pointer-events:none}
+@media (max-width:700px){.art{align-items:flex-end;padding:0 0 22vh;justify-content:center}.art svg{width:90vw;opacity:.35}.copy{width:auto;right:20px}}
+@media (prefers-reduced-motion:reduce){.scene.on .art,.scene.on .headline{animation:none}.scene{transition:none}}
+</style>
+</head>
+<body>
+<div id="stage" aria-live="off"></div>
+<div id="subs" aria-live="polite"><span id="subtext"></span></div>
+
+<div id="intro">
+  <svg viewBox="0 0 400 400" aria-hidden="true"><g fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><rect x="60" y="230" width="90" height="90" stroke="#F2C14E" transform="rotate(-6 105 275)"/><rect x="160" y="220" width="90" height="90" stroke="#EF8A6B" transform="rotate(4 205 265)"/><rect x="110" y="130" width="90" height="90" stroke="#8CC2E0" transform="rotate(-3 155 175)"/><circle cx="300" cy="110" r="48" stroke="#F2C14E"/></g></svg>
+  <p class="chapter" style="color:var(--sun);margin:0">Un documental de Elisa Sánchez Arillo</p>
+  <h1>Saber usarla</h1>
+  <p>La inteligencia artificial en el aula de Educación Infantil, con Gemini, NotebookLM y Google Workspace de la Junta de Andalucía.</p>
+  <button id="play">Ver el documental</button>
+  <p class="note">La locución usa las voces instaladas en tu navegador o dispositivo. Si no se oye o la voz no es femenina, elige otra en el menú «Voz» de la barra inferior. Duración aproximada: 9 minutos.</p>
+</div>
+
+<div id="bar" hidden>
+  <button id="pp" aria-label="Pausar">Pausa</button>
+  <button id="prev" aria-label="Capítulo anterior">Anterior</button>
+  <button id="next" aria-label="Capítulo siguiente">Siguiente</button>
+  <div id="track" role="group" aria-label="Capítulos"></div>
+  <button id="cc" aria-pressed="true">Subtítulos: sí</button>
+  <label class="lbl" for="voice">Voz</label><select id="voice"></select>
+  <label class="lbl" for="rate">Velocidad</label>
+  <select id="rate"><option value="0.9">Pausada</option><option value="1" selected>Normal</option><option value="1.1">Ágil</option></select>
+</div>
+
+<script>
+const C={sun:'#F2C14E',coral:'#EF8A6B',sky:'#8CC2E0',ink:'#F3EEDF'};
+const g=(inner)=>`<svg viewBox="0 0 500 500" aria-hidden="true"><g fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">${inner}</g></svg>`;
+const ART={
+  aula:g(`<rect x="80" y="300" width="100" height="100" stroke="${C.sun}" transform="rotate(-6 130 350)"/><rect x="195" y="292" width="100" height="100" stroke="${C.coral}" transform="rotate(5 245 342)"/><rect x="140" y="190" width="100" height="100" stroke="${C.sky}" transform="rotate(-3 190 240)"/><path d="M360 380 q20-90 0-150 q-20 60 0 150z M330 300 l60 0 M335 260 l50 0 M340 340 l40 0" stroke="${C.sun}"/><circle cx="380" cy="120" r="52" stroke="${C.sun}"/>`),
+  pantalla:g(`<rect x="90" y="120" width="320" height="210" rx="14" stroke="${C.sky}"/><path d="M200 380 h100 M250 330 v50" stroke="${C.sky}"/><path d="M140 180 h150 M140 220 h220 M140 260 h120" stroke="${C.ink}" opacity=".6"/><circle cx="370" cy="270" r="22" stroke="${C.sun}"/>`),
+  saber:g(`<path d="M100 330 q150-230 300 0" stroke="${C.sun}"/><circle cx="250" cy="200" r="70" stroke="${C.coral}"/><path d="M225 200 l18 18 l34-38" stroke="${C.ink}"/><path d="M90 400 h320" stroke="${C.sky}"/>`),
+  manos:g(`<circle cx="170" cy="300" r="60" stroke="${C.coral}"/><circle cx="320" cy="290" r="45" stroke="${C.sun}"/><path d="M120 400 q130-60 260 0" stroke="${C.sky}"/><rect x="300" y="100" width="110" height="80" rx="10" stroke="${C.ink}" opacity=".45"/>`),
+  escudo:g(`<path d="M250 80 l130 50 v100 q0 120-130 180 q-130-60-130-180 v-100z" stroke="${C.sun}"/><path d="M200 250 l35 35 l70-80" stroke="${C.ink}"/>`),
+  tres:g(`<circle cx="150" cy="200" r="70" stroke="${C.sky}"/><circle cx="330" cy="200" r="70" stroke="${C.coral}"/><rect x="180" y="300" width="140" height="110" rx="12" stroke="${C.sun}"/>`),
+  bichos:g(`<ellipse cx="230" cy="280" rx="80" ry="55" stroke="${C.coral}"/><circle cx="320" cy="250" r="30" stroke="${C.coral}"/><path d="M180 240 l-30-40 M230 228 v-48 M280 240 l30-40 M180 320 l-30 40 M280 320 l30 40" stroke="${C.sun}"/><circle cx="140" cy="130" r="40" stroke="${C.sky}"/><path d="M168 158 l40 40" stroke="${C.sky}"/>`),
+  libro:g(`<path d="M90 160 q80-40 160 0 v220 q-80-40-160 0z M250 160 q80-40 160 0 v220 q-80-40-160 0z" stroke="${C.sun}"/><path d="M120 220 h90 M120 260 h70 M290 220 h90 M290 260 h70" stroke="${C.ink}" opacity=".55"/>`),
+  tarjetas:g(`<rect x="80" y="130" width="150" height="190" rx="12" stroke="${C.sky}" transform="rotate(-6 155 225)"/><rect x="250" y="150" width="150" height="190" rx="12" stroke="${C.coral}" transform="rotate(5 325 245)"/><circle cx="155" cy="210" r="35" stroke="${C.ink}"/><path d="M290 220 q35-40 70 0" stroke="${C.ink}"/>`),
+  nota:g(`<rect x="120" y="100" width="260" height="320" rx="14" stroke="${C.sun}"/><path d="M160 170 h180 M160 220 h150 M160 270 h170 M160 320 h110" stroke="${C.ink}" opacity=".55"/><path d="M340 380 l40-40" stroke="${C.coral}"/>`),
+  check:g(`<path d="M120 140 l20 20 l40-40 M120 240 l20 20 l40-40 M120 340 l20 20 l40-40" stroke="${C.sun}"/><path d="M220 145 h170 M220 245 h150 M220 345 h160" stroke="${C.ink}" opacity=".55"/>`),
+  pina:g(`<path d="M250 420 q-90-80-60-200 q60-60 120 0 q30 120-60 200z" stroke="${C.sun}"/><path d="M200 260 q50 30 100 0 M195 310 q55 30 110 0 M210 360 q40 25 80 0" stroke="${C.coral}"/><circle cx="380" cy="120" r="46" stroke="${C.sky}"/>`)
+};
+// Each line: [subtitle, spoken text (optional)]
+const SCENES=[
+ {ch:'Prólogo',t:'Las nueve de la mañana',art:'aula',l:[
+  ['Son las nueve de la mañana en un aula de cuatro años.'],
+  ['Huele a plastilina, alguien ha traído una piña del parque y la asamblea está a punto de empezar.'],
+  ['En esta escena no hay ninguna pantalla encendida.'],
+  ['Y, sin embargo, la inteligencia artificial ya ha pasado por aquí: anoche, mientras la maestra preparaba la semana.']]},
+ {ch:'Capítulo 1',t:'Llegó antes que la formación',art:'pantalla',l:[
+  ['La inteligencia artificial generativa ha entrado en los centros antes que la formación para usarla.'],
+  ['Muchos docentes la prueban por su cuenta, con cuentas personales, sin saber dónde terminan los datos que escriben.'],
+  ['Por eso la pregunta ya no es si vamos a usarla.'],
+  ['La pregunta es si vamos a saber usarla.']]},
+ {ch:'Capítulo 2',t:'Usarla no es lo mismo que saber usarla',art:'saber',l:[
+  ['Saber manejar esta tecnología forma parte hoy de la competencia digital docente.'],
+  ['Significa elegir la herramienta adecuada, escribir instrucciones claras y reconocer cuándo se equivoca.'],
+  ['Significa también proteger a quien no puede protegerse solo: el alumnado.'],
+  ['Quien no la conoce, o depende de ella o la rechaza sin criterio.'],
+  ['Quien la conoce, decide.']]},
+ {ch:'Capítulo 3',t:'Trabaja para la maestra, no para los niños',art:'manos',l:[
+  ['En Educación Infantil, el alumnado no usa estas herramientas.'],
+  ['Los niños y las niñas siguen con sus manos, sus cuentos y su patio.'],
+  ['La pantalla la usa el docente, fuera del horario lectivo.'],
+  ['El objetivo es recuperar tiempo de preparación y dedicarlo a lo que ocurre en el aula.']]},
+ {ch:'Capítulo 4',t:'Ningún nombre. Ninguna foto. Ningún dato real.',art:'escudo',l:[
+  ['Hay una norma que no se negocia.'],
+  ['No se escriben nombres, apellidos, fotografías ni diagnósticos del alumnado.'],
+  ['Se trabaja con códigos, como A1 o A2, o con descripciones genéricas.','Se trabaja con códigos, como a uno o a dos, o con descripciones genéricas.'],
+  ['Y siempre con la cuenta corporativa de la Junta: @g.educaand.es.','Y siempre con la cuenta corporativa de la Junta, la que termina en ge, punto, educa and, punto, es.']]},
+ {ch:'Capítulo 5',t:'Tres piezas del mismo entorno',art:'tres',l:[
+  ['Gemini ayuda a escribir: ideas de proyectos, cuentos, rutinas de asamblea, notas para las familias.','Yémini ayuda a escribir: ideas de proyectos, cuentos, rutinas de asamblea, notas para las familias.'],
+  ['NotebookLM responde a partir de los documentos que sube el docente.','Notebook el eme responde a partir de los documentos que sube el docente.'],
+  ['Y Docs, Presentaciones y Formularios son el lugar donde se maqueta y se guarda todo.']]},
+ {ch:'Capítulo 6',t:'Planificar con la clase real',art:'bichos',l:[
+  ['El primer uso es planificar: una situación de aprendizaje sobre los bichos del patio para un grupo de cuatro años.'],
+  ['La diferencia está en el contexto: cuántos niños hay, qué apoyos necesitan, qué materiales tiene el aula.'],
+  ['Cuanto más real es el punto de partida, menos hay que corregir después.'],
+  ['Y la primera respuesta es solo un borrador. Se sigue conversando hasta que encaja.']]},
+ {ch:'Capítulo 7',t:'Cuentos a medida y normativa con fuentes',art:'libro',l:[
+  ['Un cuento para el conflicto del rincón de construcciones: dos animales, unas piezas y un turno que respetar.'],
+  ['Frases cortas, repeticiones y onomatopeyas para decir en voz alta.'],
+  ['Cuando la duda es normativa, NotebookLM responde con la Orden del currículo y la propuesta pedagógica del centro.','Cuando la duda es normativa, Notebook el eme responde con la Orden del currículo y la propuesta pedagógica del centro.'],
+  ['Se equivoca menos, pero también se equivoca. Por eso cada cita se comprueba.']]},
+ {ch:'Capítulo 8',t:'Rutinas que se ven',art:'tarjetas',l:[
+  ['Las rutinas del aula también se ven: lavarse las manos, recoger, sentarse en la asamblea.'],
+  ['Tarjetas con contorno grueso, colores planos y fondo blanco.'],
+  ['Si el centro ya usa pictogramas, como los de ARASAAC, se mantienen.','Si el centro ya usa pictogramas, como los de Arasaac, se mantienen.'],
+  ['La coherencia ayuda, sobre todo al alumnado con dificultades de comunicación. La IA queda para lo que no existe.','La coherencia ayuda, sobre todo al alumnado con dificultades de comunicación. La inteligencia artificial queda para lo que no existe.']]},
+ {ch:'Capítulo 9',t:'De la nota rápida a la familia',art:'nota',l:[
+  ['Al final de la mañana, dos minutos en un formulario: un código, un rincón, un logro y algo que cuesta.'],
+  ['Con esas notas, Gemini ayuda a redactar un comentario cercano para la familia.','Con esas notas, Yémini ayuda a redactar un comentario cercano para la familia.'],
+  ['Después llega la parte que no se delega: cambiar el código por el nombre, leerlo en voz alta y ajustarlo.'],
+  ['Si suena a plantilla, la familia lo va a notar.']]},
+ {ch:'Capítulo 10',t:'Antes de imprimir o enviar',art:'check',l:[
+  ['Cinco preguntas antes de que nada salga del ordenador.'],
+  ['¿He quitado nombres, fotos y cualquier dato real? ¿Estoy en mi cuenta corporativa?'],
+  ['¿He comprobado lo que dice la normativa? ¿Está ajustado a mi grupo de verdad?'],
+  ['Y la última: ¿lo firmaría con mi nombre?']]},
+ {ch:'Epílogo',t:'Saber usarla',art:'pina',l:[
+  ['Saber manejar esta tecnología no es una moda ni un lujo.'],
+  ['Es la diferencia entre que la herramienta trabaje para la escuela o que la escuela trabaje para la herramienta.'],
+  ['En el aula de cuatro años, la piña del parque pasa de mano en mano. Nadie mira una pantalla.'],
+  ['Y eso también es saber usarla.'],
+  ['Un documental de Elisa Sánchez Arillo.']]}
+];
+
+const stage=document.getElementById('stage'), subs=document.getElementById('subs'), subtext=document.getElementById('subtext');
+const bar=document.getElementById('bar'), track=document.getElementById('track'), vSel=document.getElementById('voice'), rSel=document.getElementById('rate');
+SCENES.forEach((s,i)=>{
+  const d=document.createElement('div');d.className='scene';d.innerHTML=`<div class="art">${ART[s.art]}</div><div class="copy"><p class="chapter">${s.ch}</p><h2 class="headline">${s.t}</h2></div>`;stage.appendChild(d);
+  const b=document.createElement('button');b.setAttribute('aria-label',`${s.ch}: ${s.t}`);b.onclick=()=>go(i);track.appendChild(b);
+});
+const sceneEls=[...stage.children], dots=[...track.children];
+let si=0, li=0, playing=false, timer=null, token=0, voices=[], voice=null;
+const synth=('speechSynthesis' in window)?window.speechSynthesis:null;
+const FEM=/m[oó]nica|helena|laura|elvira|luc[ií]a|paulina|marisol|esperanza|sabina|carmen|ximena|isabela|google español$|dalia|elena|conchita|penélope|lupe|sara|silvia/i;
+const MALE=/jorge|pablo|diego|juan|carlos|enrique|álvaro|alvaro|raul|raúl|miguel|antonio/i;
+function loadVoices(){
+  if(!synth)return;
+  voices=synth.getVoices().filter(v=>/^es/i.test(v.lang));
+  const score=v=>(/es[-_]ES/i.test(v.lang)?4:0)+(FEM.test(v.name)?3:0)-(MALE.test(v.name)?5:0)+(v.localService?0:1);
+  voices.sort((a,b)=>score(b)-score(a));
+  vSel.innerHTML='';
+  if(!voices.length){vSel.innerHTML='<option>Sin voz en castellano</option>';voice=null;return;}
+  voices.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${v.name} (${v.lang})`;vSel.appendChild(o);});
+  voice=voices[0];
+}
+if(synth){loadVoices();synth.onvoiceschanged=loadVoices;}
+vSel.onchange=()=>{voice=voices[+vSel.value]||null;restartLine();};
+rSel.onchange=restartLine;
+
+function paint(){
+  sceneEls.forEach((e,i)=>e.classList.toggle('on',i===si));
+  dots.forEach((d,i)=>{d.className=i<si?'done':i===si?'now':'';});
+}
+function speakLine(){
+  clearTimeout(timer); const my=++token;
+  const s=SCENES[si]; if(li>=s.l.length){ if(si<SCENES.length-1){timer=setTimeout(()=>{if(my===token&&playing)go(si+1)},1400);} else {playing=false;ppLbl();} return;}
+  const [sub,say]=s.l[li]; subtext.textContent=sub;
+  const next=()=>{if(my!==token||!playing)return; li++; timer=setTimeout(speakLine,450);};
+  if(synth&&voice){
+    synth.cancel();
+    const u=new SpeechSynthesisUtterance(say||sub); u.voice=voice; u.lang=voice.lang; u.rate=+rSel.value; u.pitch=1.05;
+    u.onend=next; u.onerror=e=>{if(e.error!=='interrupted'&&e.error!=='canceled')fallback(sub,next);};
+    synth.speak(u);
+  } else fallback(sub,next);
+}
+function fallback(sub,next){timer=setTimeout(next,Math.max(2600,sub.split(/\s+/).length*400/(+rSel.value)));}
+function go(i){si=Math.max(0,Math.min(SCENES.length-1,i));li=0;paint();if(playing){speakLine();}else{subtext.textContent=SCENES[si].l[0][0];}}
+function restartLine(){if(playing){synth&&synth.cancel();speakLine();}}
+function pause(){playing=false;token++;clearTimeout(timer);synth&&synth.cancel();ppLbl();}
+function play(){playing=true;ppLbl();speakLine();}
+function ppLbl(){const b=document.getElementById('pp');b.textContent=playing?'Pausa':'Reproducir';b.setAttribute('aria-label',playing?'Pausar':'Reproducir');}
+document.getElementById('pp').onclick=()=>playing?pause():play();
+document.getElementById('prev').onclick=()=>go(si-1);
+document.getElementById('next').onclick=()=>go(si+1);
+const cc=document.getElementById('cc');cc.onclick=()=>{const on=subs.classList.toggle('off');cc.textContent=on?'Subtítulos: no':'Subtítulos: sí';cc.setAttribute('aria-pressed',String(!on));};
+document.getElementById('play').onclick=()=>{document.getElementById('intro').remove();bar.hidden=false;loadVoices();paint();play();idle();};
+document.addEventListener('keydown',e=>{if(bar.hidden)return;if(e.key===' '&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='SELECT'){e.preventDefault();playing?pause():play();} if(e.key==='ArrowRight')go(si+1); if(e.key==='ArrowLeft')go(si-1);});
+let it;function idle(){bar.classList.remove('hide');clearTimeout(it);it=setTimeout(()=>{if(playing&&!bar.contains(document.activeElement))bar.classList.add('hide')},3500);}
+['mousemove','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,()=>{if(!bar.hidden)idle()},{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)pause();});
+</script>
+</body>
+</html>
